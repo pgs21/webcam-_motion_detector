@@ -8,6 +8,11 @@ import datetime
 import imutils
 import time
 import cv2
+import numpy as np
+
+import subprocess
+import os.path
+
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -15,9 +20,14 @@ ap.add_argument("-v", "--video", help="path to the video file")
 ap.add_argument("-a", "--min-area", type=int, default=500, help="minimum area size")
 args = vars(ap.parse_args())
 
+X_DIMENSION = 288
+Y_DIMENSION = 382
+black_image = np.zeros((X_DIMENSION, Y_DIMENSION), 3)
+
 # if the video argument is None, then we are reading from webcam
 if args.get("video", None) is None:
 	camera = cv2.VideoCapture(0)
+	camera.set(16, 1) 
 	time.sleep(0.25)
 
 # otherwise, we are reading from a video file
@@ -26,6 +36,12 @@ else:
 
 # initialize the first frame in the video stream
 firstFrame = None
+
+f = 'Chilling.wav'
+if os.path.isfile(f):
+	audio = subprocess.Popen(['aplay','-q',f])
+cv2.namedWindow("Frame Delta", cv2.WND_PROP_FULLSCREEN)          
+cv2.setWindowProperty("Frame Delta", 0, 1)
 
 # loop over the frames of the video
 while True:
@@ -78,17 +94,22 @@ while True:
 		(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 
 	# show the frame and record if the user presses a key
+	
+
 	cv2.imshow("Security Feed", frame)
 	cv2.imshow("Thresh", thresh)
+	
 	cv2.imshow("Frame Delta", frameDelta)
+
 	key = cv2.waitKey(1) & 0xFF
 
 	# if the `q` key is pressed, break from the lop
 	if key == 27:
 		break
-	for dorme in range(0,5):
+	for dorme in range(0,10):
 		camera.read()
 
 # cleanup the camera and close any open windows
+audio.kill()
 camera.release()
 cv2.destroyAllWindows()
