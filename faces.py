@@ -36,11 +36,11 @@ while(1):
 		border=cv2.copyMakeBorder(frameDelta, top=0, bottom=0, left=107, right=107, borderType= cv2.BORDER_CONSTANT, value=[0,0,0] )
 		cv2.imshow("Frame Delta", border)
 		face_detected -=1
-	cv2.waitKey(1)& 0xff
+	k = cv2.waitKey(1)& 0xff
 	for dorme in range(0,15):
 		cap.read()
 	cv2.imshow("Frame Delta", blank_image)
-	cv2.waitKey(1)& 0xff
+	k = cv2.waitKey(1)& 0xff
 	for dorme2 in range(0,1):
 		cap.read()
 
