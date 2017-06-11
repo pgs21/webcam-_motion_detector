@@ -2,17 +2,26 @@ import numpy as np
 import cv2
 import imutils
 
+import subprocess
+import os.path
+
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 cap = cv2.VideoCapture(0)
 firstFrame = None
 face_detected = 0
 frame_count = 0
+playing = 0
 
 blank_image = np.zeros((480,854,3), np.uint8)
 
 cv2.namedWindow("Frame Delta", cv2.WND_PROP_FULLSCREEN)          
 cv2.setWindowProperty("Frame Delta", 0, 1)
+
+f = 'Porches_and_Universes.mp3'
+if os.path.isfile(f):
+	subprocess.Popen(['audacious',f])
+	subprocess.Popen(['audtool','--playback-stop'])
 
 while(1):
 	ret, img = cap.read()
@@ -30,12 +39,20 @@ while(1):
 
 	for (x,y,w,h) in faces:
 		face_detected = 5
+		if playing == 0:
+			subprocess.Popen(['audtool','--playback-play'])
+			playing = 1
 
 	if (face_detected >0 ):
 		frameDelta = cv2.absdiff(firstFrame, grayblur)
 		border=cv2.copyMakeBorder(frameDelta, top=0, bottom=0, left=107, right=107, borderType= cv2.BORDER_CONSTANT, value=[0,0,0] )
 		cv2.imshow("Frame Delta", border)
 		face_detected -=1
+	
+	if(face_detected ==0) and (playing == 1):
+		subprocess.Popen(['audtool','--playback-stop'])
+		playing = 0
+
 	k = cv2.waitKey(1)& 0xff
 	for dorme in range(0,15):
 		cap.read()
@@ -50,5 +67,6 @@ while(1):
 	elif k==99:
 		firstFrame = gray
 
+subprocess.Popen(['audtool','--shutdown'])
 cap.release()
 cv2.destroyAllWindows()
