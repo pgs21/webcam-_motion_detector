@@ -7,7 +7,7 @@ import os.path
 
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-
+cap = cv2.VideoCapture(1)
 
 firstFrame = None
 firstFrameleft = None
@@ -74,15 +74,15 @@ def grayprocessright(gray):
 def faceprocess(gray):
 	
 	faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-
+	face = 0
 	for (x,y,w,h) in faces:
-		global face_detected
-		face_detected = 5
+		face=  5
 		global playing
 		if playing == 0:
 			subprocess.Popen(['audtool','--playback-play'])
 			playing = 1
-	return
+
+	return face
 
 def blink(cap):
 	k = cv2.waitKey(1)& 0xff
@@ -98,43 +98,55 @@ def blink(cap):
 		cap.grab()
 	return 0
 
-while(sair):
-	cap = cv2.VideoCapture(0)
-	cap2 = cv2.VideoCapture(1)
-	cap3 = cv2.VideoCapture(2)
+cv2.imshow("Frame Delta", blank_image)
 
-	for cinco in range(0, 4):
+while(sair):
+	
+	cap2 = cv2.VideoCapture(4)
+	cap3 = cv2.VideoCapture(5)
+	face = 0
+	for cinco in range(0, 6):
 		gray = imgprocess(cap)
-		faceprocess(gray)
+		face = faceprocess(gray)
 		border = grayprocess(gray)
 		
-		#if (face_detected >0 ):
-		cv2.imshow("Frame Delta", border)
-		face_detected -=1
-		if blink(cap):
-			sair = 0
+		if (face > 0 ):
+			cv2.imshow("Frame Delta", border)
+			face -=1
+			if blink(cap):
+				sair = 0
 
-	cap.release()
+	graymain = imgprocess(cap)
+	face = faceprocess(graymain)
 
-	for cinco2 in range(0, 4):
+	for cinco2 in range(0, 6):
+		graymain = imgprocess(cap)
+		face = faceprocess(graymain)
+
 		gray = imgprocess(cap2)
 		border = grayprocessleft(gray)
-		
-	#	if (face_detected >0 ):
-		cv2.imshow("Frame Delta", border)
-		if blink(cap2):
-			sair = 0
+		if (face >0 ):
+			cv2.imshow("Frame Delta", border)
+			face -=1
+			if blink(cap2):
+				sair = 0
 
 	cap2.release()
+	
+	
 
-	for cinco3 in range(0, 4):
+	for cinco3 in range(0, 6):
+		graymain = imgprocess(cap)
+		face = faceprocess(graymain)
+
 		gray = imgprocess(cap3)
 		border = grayprocessright(gray)
-		
-	#	if (face_detected >0 ):
-		cv2.imshow("Frame Delta", border)
-		if blink(cap3):
-			sair = 0
+		if (face >0 ):
+			cv2.imshow("Frame Delta", border)
+			face -=1
+			if blink(cap3):
+				sair = 0
+
 	cap3.release()
 	
 	
