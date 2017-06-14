@@ -18,7 +18,7 @@ frame_count = 0
 playing = 0
 sair = 1
 
-blank_image = np.zeros((480,854,3), np.uint8)
+blank_image = np.zeros((768,1024,3), np.uint8)
 
 cv2.namedWindow("Frame Delta", cv2.WND_PROP_FULLSCREEN)          
 cv2.setWindowProperty("Frame Delta", 0, 1)
@@ -47,7 +47,8 @@ def grayprocess(gray):
 	if firstFrame is None:
 		firstFrame = grayblur
 	frameDelta = cv2.absdiff(firstFrame, grayblur)
-	border=cv2.copyMakeBorder(frameDelta, top=0, bottom=0, left=107, right=107, borderType= cv2.BORDER_CONSTANT, value=[0,0,0] )
+	#border=cv2.copyMakeBorder(frameDelta, top=0, bottom=0, left=107, right=107, borderType= cv2.BORDER_CONSTANT, value=[0,0,0] )
+	border=frameDelta
 	return border
 
 def grayprocessleft(gray):
@@ -58,7 +59,7 @@ def grayprocessleft(gray):
 	if firstFrameleft is None:
 		firstFrameleft = grayblur
 	frameDelta = cv2.absdiff(firstFrameleft, grayblur)
-	border=cv2.copyMakeBorder(frameDelta, top=0, bottom=0, left=107, right=107, borderType= cv2.BORDER_CONSTANT, value=[0,0,0] )
+	border=cv2.copyMakeBorder(frameDelta, top=0, bottom=0, left=146, right=146, borderType= cv2.BORDER_CONSTANT, value=[0,0,0] )
 	return border
 
 def grayprocessright(gray):
@@ -69,7 +70,7 @@ def grayprocessright(gray):
 	if firstFrameright is None:
 		firstFrameright = grayblur
 	frameDelta = cv2.absdiff(firstFrameright, grayblur)
-	border=cv2.copyMakeBorder(frameDelta, top=0, bottom=0, left=107, right=107, borderType= cv2.BORDER_CONSTANT, value=[0,0,0] )
+	border=cv2.copyMakeBorder(frameDelta, top=0, bottom=0, left=146, right=146, borderType= cv2.BORDER_CONSTANT, value=[0,0,0] )
 	return border
 
 def faceprocess(gray, face):
