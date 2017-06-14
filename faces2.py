@@ -7,7 +7,7 @@ import os.path
 
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 firstFrame = None
 firstFrameleft = None
@@ -30,9 +30,6 @@ if os.path.isfile(f):
 
 
 def imgprocess (capture):
-	capture.grab()
-	capture.grab()
-	capture.grab()
 	ret,img = capture.read()
 	
 	if not ret :
@@ -54,6 +51,8 @@ def grayprocess(gray):
 	return border
 
 def grayprocessleft(gray):
+	gray = cv2.transpose(gray)
+	gray = cv2.flip(gray,0)
 	grayblur = cv2.GaussianBlur(gray, (21, 21), 0)
 	global firstFrameleft
 	if firstFrameleft is None:
@@ -63,6 +62,8 @@ def grayprocessleft(gray):
 	return border
 
 def grayprocessright(gray):
+	gray = cv2.transpose(gray)
+	gray = cv2.flip(gray,1)
 	grayblur = cv2.GaussianBlur(gray, (21, 21), 0)
 	global firstFrameright
 	if firstFrameright is None:
@@ -71,10 +72,10 @@ def grayprocessright(gray):
 	border=cv2.copyMakeBorder(frameDelta, top=0, bottom=0, left=107, right=107, borderType= cv2.BORDER_CONSTANT, value=[0,0,0] )
 	return border
 
-def faceprocess(gray):
+def faceprocess(gray, face):
 	
 	faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-	face = 0
+
 	for (x,y,w,h) in faces:
 		face=  5
 		global playing
@@ -88,7 +89,7 @@ def blink(cap):
 	k = cv2.waitKey(1)& 0xff
 	if k == 27:
 		return 1
-	for dorme in range(0,15):
+	for dorme in range(0,10):
 		cap.grab()
 	cv2.imshow("Frame Delta", blank_image)
 	k = cv2.waitKey(1)& 0xff
@@ -102,12 +103,12 @@ cv2.imshow("Frame Delta", blank_image)
 
 while(sair):
 	
-	cap2 = cv2.VideoCapture(4)
-	cap3 = cv2.VideoCapture(5)
+	cap2 = cv2.VideoCapture(1)
+	cap3 = cv2.VideoCapture(2)
 	face = 0
 	for cinco in range(0, 6):
 		gray = imgprocess(cap)
-		face = faceprocess(gray)
+		face = faceprocess(gray, face)
 		border = grayprocess(gray)
 		
 		if (face > 0 ):
@@ -116,12 +117,9 @@ while(sair):
 			if blink(cap):
 				sair = 0
 
-	graymain = imgprocess(cap)
-	face = faceprocess(graymain)
-
 	for cinco2 in range(0, 6):
 		graymain = imgprocess(cap)
-		face = faceprocess(graymain)
+		face = faceprocess(graymain, face)
 
 		gray = imgprocess(cap2)
 		border = grayprocessleft(gray)
@@ -137,7 +135,7 @@ while(sair):
 
 	for cinco3 in range(0, 6):
 		graymain = imgprocess(cap)
-		face = faceprocess(graymain)
+		face = faceprocess(graymain, face)
 
 		gray = imgprocess(cap3)
 		border = grayprocessright(gray)
@@ -150,18 +148,9 @@ while(sair):
 	cap3.release()
 	
 	
-	if(face_detected ==0) and (playing == 1):
+	if(face ==0) and (playing == 1):
 		subprocess.Popen(['audtool','--playback-stop'])
 		playing = 0
-	
-
-
-
-
-
-
-
-
 	
 
 subprocess.Popen(['audtool','--shutdown'])
